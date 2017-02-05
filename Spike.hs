@@ -31,7 +31,7 @@ framing ss = framing' 0 ss
 bonusing :: [Frame] -> [Int]
 bonusing fs = sort $ concat $ zipWith bonusing' [0..] fs
     where
-    bonusing' t (f,_) | f >= 10 = [t] 
+    bonusing' t (f,_) | f >= 10 = [] 
     bonusing' t (_,Strike) = [t,t+1,t+2]
     bonusing' t (_,Spare)  = [t,t+1]
     bonusing' t (_,_)      = [t]
