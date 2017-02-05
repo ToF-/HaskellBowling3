@@ -1,61 +1,55 @@
 import Data.List
 import Data.Maybe
 
-data Score = Strike | Spare | Normal | Half Int 
+data Result = Strike | Spare | Normal | Half Int 
     deriving (Eq, Show,Ord)
 
 type Throw = Int
-type Frame = (Int,Score)
+type Frame = (Int,Result)
 
-result :: Score -> Throw -> Score
+result :: Result -> Throw -> Result
 result (Half x) y | x+y == 10 = Spare
-                 | otherwise = Normal
-result _  10 = Strike
-result _   x = Half x
+                  | otherwise = Normal
+result _  10                  = Strike
+result _   x                  = Half x
 
-scoring :: [Throw] -> [Score]
-scoring ns = scoring' Normal ns
+results :: [Throw] -> [Result]
+results = results' Normal
     where 
-    scoring' _ [] = []
-    scoring' s (t:ts) = sc' : scoring' sc' ts
-        where
-        sc' = result s t
+    results' _ [] = []
+    results' s (t:ts) = let r = result s t in r : results' r ts
 
-framing :: [Score] -> [Frame]
-framing ss = framing' 0 ss
+frames :: [Result] -> [Frame]
+frames rs = frames' 0 rs
     where 
-    framing' _ [] = []
-    framing' f (Half n:ss) = (f,(Half n)):framing' f ss    
-    framing' f (sc:ss)     = (f,sc):framing' (f+1) ss
+    frames' _ [] = []
+    frames' f (Half n:rs) = (f,(Half n)):frames' f rs    
+    frames' f (r:rs)      = (f,r)       :frames' (succ f) rs
 
-bonusing :: [Frame] -> [Int]
-bonusing fs = sort $ concat $ zipWith bonusing' [0..] fs
+bonuses :: [Frame] -> [Int]
+bonuses fs = concat $ zipWith bonuses' [0..] fs
     where
-    bonusing' t (f,_) | f >= 10 = [] 
-    bonusing' t (_,Strike) = [t,t+1,t+2]
-    bonusing' t (_,Spare)  = [t,t+1]
-    bonusing' t (_,_)      = [t]
+    bonuses' t (f,_) | f >= 10 = [] 
+    bonuses' t (_,Strike) = [t,t+1,t+2]
+    bonuses' t (_,Spare)  = [t,t+1]
+    bonuses' t (_,_)      = [t]
     
 
 score :: [Throw] -> Int
-score ts =
-    let throws   = zip [0..] ts
-        bonuses  = bonusing $ framing $ scoring ts
-        points = map (fromJust . flip lookup throws) bonuses 
-    in sum points
+score ts = (sum . map (fromJust . flip lookup (zip [0..] ts)) . (bonuses . frames . results)) ts 
 
 ts = [6,4,10,0,10,3,5]
 pf = replicate 12 10
 main = do
     print ts
-    print $ scoring ts
-    print $ framing $ scoring ts
-    print $ bonusing $ framing $ scoring ts
+    print $ results ts
+    print $ frames $ results ts
+    print $ bonuses $ frames $ results ts
     print $ score ts
     print pf
-    print $ scoring pf
-    print $ framing $ scoring pf
-    print $ bonusing $ framing $ scoring pf
+    print $ results pf
+    print $ frames $ results pf
+    print $ bonuses $ frames $ results pf
     print $ score pf
     
 
