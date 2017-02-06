@@ -12,4 +12,6 @@ score = score' 0
     score' f (x:y:z:ts) | x == 10   = x+y+z + score' (succ f) (y:z:ts)
     score' f (x:y:z:ts) | x+y == 10 = x+y+z + score' (succ f) (z:ts)
                         | otherwise = x+y   + score' (succ f) (z:ts)
+    -- this pattern matches partial games (half frame)
     score' f (x:ts)                 = x     + score' f ts
+
