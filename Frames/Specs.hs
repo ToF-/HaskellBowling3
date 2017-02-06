@@ -10,3 +10,6 @@ main = hspec $ do
             it "for games with spares" $ do
                 score [5,5,5,0] `shouldBe` 20
                 score [8,2,1,9,4,4] `shouldBe` 33
+            it "for games with strikes" $ do
+                score [10,4,3] `shouldBe` 24
+                score [10,10,5,5,5] `shouldBe` 65 
