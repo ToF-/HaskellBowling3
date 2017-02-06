@@ -1,4 +1,4 @@
-module Bowling
+module Recursive.Bowling
 where
 
 type Throw = Int

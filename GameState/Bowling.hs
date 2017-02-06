@@ -1,4 +1,4 @@
-module Bowling
+module GameState.Bowling
 where
 
 data GameState = GameState { _score :: Score,

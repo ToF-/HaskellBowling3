@@ -1,4 +1,4 @@
-module Bowling
+module Frames.Bowling
 where
 import Data.Maybe
 
