@@ -13,4 +13,8 @@ main = hspec $ do
             it "for games with strikes" $ do
                 score [10,4,3] `shouldBe` 24
                 score [10,10,5,5,5] `shouldBe` 65 
+            it "for games with end bonus" $ do
+                score [10,10,10,10,10,10,10,10,10,10,10,10] `shouldBe` 300
+                score [10,10,10,10,10,10,10,10,10,6,4,10] `shouldBe` 276
+                score [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,6,4] `shouldBe` 20
 
