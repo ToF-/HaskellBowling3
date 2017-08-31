@@ -23,7 +23,13 @@ arbitraryGame = do
     let throws = concat frames ++ final 
     return $ (R.score throws,throws)  
 
-scoring = forAll arbitraryGame $ \(sc,ts) -> G.score ts == sc && F.score ts == sc
+recursiveScore = R.score
+gameStateScore = G.score
+frameMarkScore = F.score
+
+scoring = forAll arbitraryGame $ 
+    \(result,throws) -> gameStateScore throws == result 
+                     && frameMarkScore throws == result 
 
 main = verboseCheck scoring
 

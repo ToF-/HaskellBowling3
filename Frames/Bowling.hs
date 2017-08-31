@@ -4,7 +4,8 @@ import Data.Maybe
 
 type Throw = Int
 type Score = Int
-type Frame = (Int,Result)
+data Frame = Frame Int Result 
+    deriving (Eq, Show)
 type Index = Int
 
 data Result = Normal | Half Int | Spare | Strike
@@ -26,20 +27,20 @@ results :: [Throw] -> [Result]
 results = tail . scanl result Normal 
 
 frames :: [Result] -> [Frame]
-frames = tail . scanl frame (-1,Normal)
+frames = tail . scanl nextFrame (Frame (-1) Normal)
     where
-    frame (10,_) r       = (10, r)
-    frame (f,Half _) r   = (f, r)
-    frame (f,_)      r   = (succ f, r)
+    nextFrame (Frame 10 _       ) r   = Frame 10 r
+    nextFrame (Frame n  (Half _)) r   = Frame n  r
+    nextFrame (Frame n   _      ) r   = Frame (succ n) r 
 
 marks :: [Frame] -> [Index]
 marks fs = concat $ zipWith mark fs [0..]
     where
     mark :: Frame -> Index -> [Index]
-    mark (f,_) _ | f == 10 = []
-    mark (_,Spare)  i   = [i, i+1]
-    mark (_,Strike) i   = [i, i+1, i+2]
-    mark (_,_)      i   = [i]
+    mark (Frame n     _)  _ | n == 10 = []
+    mark (Frame _ Spare)  i           = [i, i+1]
+    mark (Frame _ Strike) i           = [i, i+1, i+2]
+    mark _                i           = [i]
     
 result :: Result -> Throw -> Result
 result (Half n) t | n + t == 10 = Spare
