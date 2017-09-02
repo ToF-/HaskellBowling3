@@ -1,34 +1,18 @@
 import Test.Hspec
 import Test.QuickCheck
-import Bowling
+import qualified Recursive.Bowling as R
 
-data TestGame = TG [Int]
-    deriving (Eq, Show)
+data Normal = Normal [Int]
+    deriving (Show)
 
-data TestFrame = TF [Int]
-    deriving (Eq, Show)
-
-instance Arbitrary TestFrame where
+instance Arbitrary Normal where
     arbitrary = do
-        t1 <- elements [0..10]
-        t2 <- elements [(10-t1)..10] 
-        return $ case t2 of
-            0 -> TF [t1]
-            _ -> TF [t1,t2]
-
-instance Arbitrary TestGame where
-    arbitrary = do 
-        nf <- elements [1.10]
-        ts <- throws 2
-        return $ TG ts
-        where
-        throws 0 = return []
-        throws n = do
-            TF f <- arbitrary 
-            fs  <- throws (n-1)
-            return $ fs ++ f
+        n  <- elements [0..20]
+        ts <- vector n
+        return $ Normal $ map (`mod` 5) ts
 
 main = hspec $ do
     describe "score" $ do
-        it "should compute score for poor performing players" $ property $ do
-            \(TG ts) -> score ts == sum ts 
+        describe "for poor performance players" $ do
+            it "should equal the sum of the throws" $ property $ do
+                \(Normal ts) -> R.score ts == sum ts
