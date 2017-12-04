@@ -19,14 +19,13 @@ instance Arbitrary TestFrame where
 instance Arbitrary TestGame where
     arbitrary = do 
         nf <- elements [1.10]
-        ts <- throws 2
+        ts <- throws nf
         return $ TG ts
-        where
-        throws 0 = return []
-        throws n = do
-            TF f <- arbitrary 
-            fs  <- throws (n-1)
-            return $ fs ++ f
+throws 0 = return []
+throws n = do
+    TF f <- arbitrary 
+    fs  <- throws (n-1)
+    return $ fs ++ f
 
 main = hspec $ do
     describe "score" $ do
