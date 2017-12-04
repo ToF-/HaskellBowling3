@@ -11,17 +11,12 @@ main = hspec $ do
             it "S <n> spots a number of pins, add them then prompts the score" $ do
 
                 let
-                    inp = return "throw 7"
-                    initial = 1
-                    run = bowlingScore initial inp out
+                    inp = return $ unlines ["throw 7",
+                                            "throw 2"]
+                    run = bowlingScore inp out
 
-                snd (runWriter run)  `shouldBe` "Score = 8"
+                (lines.snd) (runWriter run)  `shouldBe` ["Score = 7"
+                                                        ,"Score = 9"]
 
-                let
-                    inp = return "throw 7"
-                    initial = 2
-                    run = bowlingScore initial inp out
-
-                snd (runWriter run)  `shouldBe` "Score = 9"
 
                 

@@ -2,7 +2,13 @@ module BowlingScore where
 
 type Score = Int
 
-bowlingScore :: Monad m => Score -> (m String) -> (String -> m ()) -> m Score 
-bowlingScore score inp out = 
-    inp >>= \line -> case words line of 
-        ["throw",pins] -> (out $ "Score = " ++ (show (score + (read pins)))) >> return (score + (read pins))
+bowlingScore :: Monad m => (m String) -> (String -> m ()) -> m () 
+bowlingScore inp out = 
+    inp >>= \ls -> out (unlines (snd (foldl score (0,[]) (lines ls))))  
+
+    where 
+    score (sc,o) s = case words s of
+        ["throw", pins] -> (sc', o ++ ["Score = " ++ show sc'])
+            where
+            sc' = sc + (read pins)
+    
