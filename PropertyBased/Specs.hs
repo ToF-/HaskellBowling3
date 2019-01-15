@@ -1,18 +1,5 @@
 import Test.QuickCheck
-
-type Throw = Integer
-
-score :: [Throw] -> Integer
-score = score' 0
-score' :: Integer -> [Throw] -> Integer
-score' 10 _ = 0
-score' f [] = 0
-score' f (10:y:z:xs) = 10 + y + z + score' (f+1) (y:z:xs)
-score' f (x:y:z:xs) | x + y == 10 = 10 + z + score' (f+1) (z:xs)
-                    | otherwise = x + y + score' (f+1) (z:xs)
-score' f (10:y:xs) = 10 + y + score' (f+1) (y:xs)
-score' f (x:y:xs) = x + y + score' (f+1) xs
-score' f (x:xs) = x + score' f xs
+import Bowling
 
 data Frame = Regular Throw Throw    
            | Spare Throw
@@ -66,19 +53,29 @@ frame = do
                    | otherwise = Regular t u
 
 prop_regular :: Property
-prop_regular = forAll regulars $ \fs -> let ts = allThrows fs in score ts == sum ts
+prop_regular = forAll regulars $
+               \frames -> let throws = allThrows frames 
+                           in score throws == sum throws
 
 prop_spare :: Property
-prop_spare = forAll spares $ \fs -> let ts = allThrows fs in score ts == (sum ts) + (sum (drop 1 (map (\(Spare n) -> n) fs)))
+prop_spare = forAll spares $ 
+             \frames -> let throws = allThrows frames
+                         in score throws == (sum throws) + (sum (drop 1 (map (\(Spare n) -> n) frames)))
 
 prop_strike :: Property
-prop_strike = forAll strikes$ \fs -> let ts = allThrows fs in score ts == (sum ts) + (sum (drop 1 ts)) + (sum (drop 2 ts))
+prop_strike = forAll strikes $ 
+              \frames -> let throws = allThrows frames 
+                          in score throws == (sum throws) + (sum (drop 1 throws)) + (sum (drop 2 throws))
 
 prop_regular_after_tenth :: Property
-prop_regular_after_tenth = forAll (listOf regular) $ \fs -> let ts = allThrows fs in score ts == score (take 20 ts)
+prop_regular_after_tenth = forAll (listOf regular) $ 
+                           \frames -> let throws = allThrows frames 
+                                       in score throws == score (take 20 throws)
 
 prop_maximum_score :: Property
-prop_maximum_score = forAll (listOf frame) $ \fs -> let ts = allThrows fs in score ts <= 300
+prop_maximum_score = forAll (listOf frame) $ 
+                     \frames -> let throws = allThrows frames 
+                                 in score throws <= 300
 main = do
     quickCheckOf "regulars score as sum of throws" prop_regular
     quickCheckOf "spares score as sum of throws plus bonuses" prop_spare 
