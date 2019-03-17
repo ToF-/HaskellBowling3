@@ -1,6 +1,10 @@
 
 Given a list of bowling throws, calculate the current score and the maximum possible score.
 
+The score should be calculated even when the list of throws doesn't form a complete game.
+
+For example the list `[4,6]` gives a score ≥ 10.
+
 Examples:
 
 ```haskell
